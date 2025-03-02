@@ -16,6 +16,10 @@ else:
         ATTENTION_MODE = 'math'
 print(f'attention mode is {ATTENTION_MODE}')
 
+# [N] => [N x dim]
+# each of the N time codes is associated with an embedding
+# P: maximum frequency
+# 0 <= n <= N/2; e^(-log(P) * n / 2 = (1/P)^(n/2)
 
 def timestep_embedding(timesteps, dim, max_period=10000):
     """
@@ -31,7 +35,7 @@ def timestep_embedding(timesteps, dim, max_period=10000):
     freqs = torch.exp(
         -math.log(max_period) * torch.arange(start=0, end=half, dtype=torch.float32) / half
     ).to(device=timesteps.device)
-    args = timesteps[:, None].float() * freqs[None]
+    args = timesteps[:, None].float() * freqs[None]   # args.shape : [N, 1] * 
     embedding = torch.cat([torch.cos(args), torch.sin(args)], dim=-1)
     if dim % 2:
         embedding = torch.cat([embedding, torch.zeros_like(embedding[:, :1])], dim=-1)
